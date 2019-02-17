@@ -46,7 +46,6 @@ ISR(TIMER1_OVF_vect) { //timer1 overflow
 	TCCR1B = 0x00;          //disable timer stopd unintended triggers
 }
 
-
 Dimmer::Dimmer(const int pin) {
 	dimmer_data.power = 100;
 	dimmer_data.pulse = HALF_CYCLE;
@@ -78,15 +77,14 @@ void Dimmer::Init()
 	//IRQ0 is pin 2. Call zeroCrossingInterrupt on rising signal
 
 	sei();
+
+	Power(100);
 }
 
 void Dimmer::Power(byte power) {
-	dimmer_data.power = power;
-	if (power != 0)
-		dimmer_data.pulse = (HALF_CYCLE * power) / 100;
-	else
-		dimmer_data.pulse = HALF_CYCLE;
-
+	dimmer_data.power = constrain(power, 0, 100);
+	dimmer_data.pulse = (HALF_CYCLE * power) / 100;
+	
 	OCR1A = (HALF_CYCLE - dimmer_data.pulse) / 2;
 }
 
